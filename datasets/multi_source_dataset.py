@@ -12,6 +12,9 @@ class MultiSourceDataset(Dataset):
         super().__init__()
         assert val_split_method in ["random", "subject"]
         dataset = torch.load(datapath)
+        for key in dataset.keys():
+            print(f"Data Slice: {key}.")
+            print(f"Data Slice Shape: {dataset[key][0].shape}.")
         self.X = [torch.tensor(x, dtype=torch.float) for x in dataset['X_train']]
         self.Y = [torch.tensor(y, dtype=torch.long)+1 for y in dataset['Y_train']]
         self.S = [torch.tensor(s, dtype=torch.long) for s in dataset['S_train']]
@@ -59,11 +62,11 @@ class MultiSourceDataModule(pl.LightningDataModule):
 
 if __name__ == "__main__":
     datapath = "../Datasets/multisource_train.pt"
-    #dataset = MultiSourceDataset(datapath)
-    datamodule = MultiSourceDataModule(datapath, 64, 1)
-    datamodule.setup(0)
-    train_dl = datamodule.train_dataloader()
-    for x_list, y_list in train_dl:
-        print([x.shape for x in x_list])
-        print([y.shape for y in y_list])
-        break
+    dataset = MultiSourceDataset(datapath)
+    #datamodule = MultiSourceDataModule(datapath, 64, 1)
+    #datamodule.setup(0)
+    #train_dl = datamodule.train_dataloader()
+    #for x_list, y_list in train_dl:
+    #    print([x.shape for x in x_list])
+    #    print([y.shape for y in y_list])
+    #    break
