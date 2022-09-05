@@ -34,6 +34,12 @@ import utils
 import vision_transformer as vits
 from vision_transformer import DINOHead
 
+from datasets.seed_dataset import SEEDDataset
+from datasets.seed_dataset import SEEDDataModule
+
+from datasets.multi_source_dataset import MultiSourceDataset
+from datasets.multi_source_dataset import MultiSourceDataModule
+
 torchvision_archs = sorted(name for name in torchvision_models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(torchvision_models.__dict__[name]))
@@ -142,7 +148,11 @@ def train_dino(args):
         args.local_crops_scale,
         args.local_crops_number,
     )
-    dataset = datasets.ImageFolder(args.data_path, transform=transform)
+    #dataset = datasets.ImageFolder(args.data_path, transform=transform)
+    datapath = "../Datasets/multisource_train.pt"
+    val_split_method = "random"
+    dataset = MultiSourceDataset(datapath, val_split_method)
+
     sampler = torch.utils.data.DistributedSampler(dataset, shuffle=True)
     data_loader = torch.utils.data.DataLoader(
         dataset,
